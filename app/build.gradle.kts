@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("jacoco")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 tasks.withType<Test> {
     extensions.configure(JacocoTaskExtension::class) {
@@ -93,6 +95,10 @@ val jacocoTestReport by tasks.registering(JacocoReport::class) {
 
 
 dependencies {
+
+    //hilt
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
 
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.6.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")

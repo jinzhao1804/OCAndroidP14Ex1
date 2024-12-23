@@ -12,11 +12,19 @@ object DummyData {
         return calendar.time
     }
 
-    val customers = listOf(
+    var customers = mutableListOf(
         Customer(1, "Alice Wonderland", "alice@example.com", generateDate(12)),
         Customer(2, "Bob Builder", "bob@example.com", generateDate(6)),
         Customer(3, "Charlie Chocolate", "charlie@example.com", generateDate(3)),
         Customer(4, "Diana Dream", "diana@example.com", generateDate(1)),
         Customer(5, "Evan Escape", "evan@example.com", generateDate(0)),
     )
+
+    fun addCustomer(customer: Customer){
+        customers.add(customer)
+    }
+
+    fun getCustomerById(id: Int): Customer? {
+        return customers.find { it.id == id }
+    }
 }

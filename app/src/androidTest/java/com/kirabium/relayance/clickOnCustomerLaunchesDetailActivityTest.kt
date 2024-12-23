@@ -9,8 +9,8 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.kirabium.relayance.ui.activity.DetailActivity
-import com.kirabium.relayance.ui.activity.MainActivity
+import com.kirabium.relayance.ui.detail.DetailActivity
+import com.kirabium.relayance.ui.list.MainActivity
 import org.hamcrest.Matchers.allOf
 import org.junit.After
 import org.junit.Before
