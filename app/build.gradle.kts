@@ -1,8 +1,10 @@
 import com.android.build.gradle.BaseExtension
 
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
+   // alias(libs.plugins.androidApplication)
+    //alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("com.android.application") // Apply the Android Gradle Plugin
+    id("org.jetbrains.kotlin.android") // Apply the Kotlin Android Plugin
     id("jacoco")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
@@ -29,8 +31,10 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         //testInstrumentationRunner = "runner.CucumberTestRunner"
+        testInstrumentationRunner = "io.cucumber.android.runner.CucumberAndroidJUnitRunner"
+
 
         vectorDrawables {
             useSupportLibrary = true
@@ -41,12 +45,18 @@ android {
         viewBinding = true
     }
 
-    sourceSets.all{
+    sourceSets.all {
+        println("Source set: ${name} -> ${java.srcDirs}")
+    }
 
+    sourceSets {
+        getByName("androidTest") {
             java.srcDirs("src/androidTest/kotlin")
             resources.srcDirs("src/androidTest/resources")
-
+        }
     }
+
+
     testOptions {
         unitTests.all {
             // Add the following line to make the task untracked
@@ -115,36 +125,30 @@ dependencies {
     implementation(libs.androidx.espresso.intents)
     implementation(libs.androidx.ui.test.junit4.android)
     implementation(libs.cucumber.android)
-    androidTestImplementation("androidx.test:runner:1.6.1")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    // Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0") // Updated to latest stable version
 
-    // JUnit dependencies
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+    // JUnit (for unit tests)
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0") // Updated to latest stable version
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0") // Updated to latest stable version
 
-    // Kotlin dependencies
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.0")
-
-    implementation ("io.cucumber:cucumber-java:7.20.1") // For Cucumber Java support
-    androidTestImplementation ("io.cucumber:cucumber-android:7.14.0") // Cucumber Android integration
-    androidTestImplementation ("io.cucumber:cucumber-junit:7.14.0")
+    // Cucumber
+    implementation("io.cucumber:cucumber-java:7.20.1") // For Cucumber Java support
+    androidTestImplementation("io.cucumber:cucumber-android:7.14.0") // Cucumber Android integration
+    androidTestImplementation("io.cucumber:cucumber-junit:7.14.0")
     androidTestImplementation("io.cucumber:cucumber-junit-rules-support:7.14.0")
 
-    androidTestImplementation ("com.android.support.test:runner:1.0.2") // Use support library for older versions
-    androidTestImplementation ("com.android.support.test.espresso:espresso-core:3.0.2")
-
-
-
-    // JUnit 4 dependency (required for Cucumber)
-    androidTestImplementation("junit:junit:4.13.2")
-
-
-    // AndroidX Test dependencies
-    androidTestImplementation("androidx.test.espresso:espresso-intents:3.6.1")
+    // AndroidX Test (for instrumentation tests)
+    androidTestImplementation("androidx.test:runner:1.6.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.6.1")
     androidTestImplementation("androidx.test:rules:1.6.1")
 
-    // Hilt dependencies
+    // JUnit 4 (required for Cucumber)
+    androidTestImplementation("junit:junit:4.13.2")
+
+    // Hilt (Dependency Injection)
     implementation("com.google.dagger:hilt-android:2.51.1")
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
 
@@ -176,7 +180,8 @@ tasks.register("cucumber") {
         javaexec {
             mainClass.set("io.cucumber.core.cli.Main")
             classpath = configurations.getByName("androidTestRuntimeClasspath").incoming.artifactView {}.files +
-                    sourceSets.getByName("androidTest").output
+                    fileTree("src/androidTest/kotlin") +
+                    fileTree("src/androidTest/resources")
             args = listOf(
                 "--plugin", "pretty",
                 "--glue", "steps",
@@ -188,4 +193,12 @@ tasks.register("cucumber") {
 
 tasks.withType<Test> {
     doNotTrackState("Disabling state tracking for test tasks")
+}
+
+tasks.register("printConfigurations") {
+    doLast {
+        configurations.forEach { configuration ->
+            println("Configuration: ${configuration.name} (canBeResolved: ${configuration.isCanBeResolved})")
+        }
+    }
 }

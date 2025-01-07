@@ -1,4 +1,3 @@
-
 @smoke
 Feature: Add a New Customer
   As a user
@@ -12,4 +11,3 @@ Feature: Add a New Customer
     And I click the "Save" button
     Then the customer "John Doe" should be added to the system
     And I should be redirected to the previous screen
-
